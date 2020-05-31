@@ -1,0 +1,2 @@
+INSERT INTO "CAMPO" ("idCampo","nombre","longitud","latitud","fecha_siembra","eficiencia","idRiego","idCultivo") VALUES (1,'Campaneta',0.234198,41.882867,'2020-05-02',65,1,1),
+ (2,'Grallera',0.234198,41.882867,'2019-01-12',75,2,2);

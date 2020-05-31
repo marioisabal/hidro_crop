@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS CULTIVO (
+	idCultivo	INTEGER PRIMARY KEY AUTOINCREMENT,
+	tipo	TEXT NOT NULL,
+	fecha_siembra_minima	TEXT NOT NULL,
+	fecha_siembra_maxima	TEXT NOT NULL
+);

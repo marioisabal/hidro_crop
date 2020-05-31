@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS RIEGO (
+	idRiego	INTEGER PRIMARY KEY AUTOINCREMENT,
+	tipo	TEXT NOT NULL,
+	eficiencia_minima	REAL NOT NULL,
+	eficiencia_maxima	REAL NOT NULL
+);
