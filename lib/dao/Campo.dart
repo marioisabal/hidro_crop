@@ -1,3 +1,7 @@
+/**
+ * Clase que define el objeto Campo
+ */
+
 class Campo{
   final int idCampo;
   final String nombre;

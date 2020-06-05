@@ -1,3 +1,7 @@
+/**
+ * Clase que define el objeto Tiempo
+ */
+
 import 'package:flutter/foundation.dart';
 
 class Tiempo {
@@ -16,7 +20,8 @@ class Tiempo {
 
   factory Tiempo.fromJson(Map<String, dynamic> parsedJson){
     var list = parsedJson['data'] as List;
-    List<Data> dataList = list.map((i) => Data.fromJson(i)).toList();
+    List<Data> dataList = list.
+    map((i) => Data.fromJson(i)).toList();
     return Tiempo(
       timezone: parsedJson['timezone'],
       state_code: parsedJson['state_code'],

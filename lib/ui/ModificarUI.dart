@@ -1,27 +1,35 @@
 /**
- * Ventana que muestra el formulario de alta
+ * Ventana que abre el formulario de modificación
  */
 
 import 'package:HidroCrop/controller/DatabaseHelper.dart';
 import 'package:HidroCrop/dao/Campo.dart';
-import 'package:HidroCrop/dao/Cultivo.dart';
 import 'package:HidroCrop/dao/Riego.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:intl/intl.dart';
 import 'Mapa.dart';
 
-class AltaUI extends StatefulWidget {
+class ModificarUI extends StatefulWidget {
   List<Campo> listaCampos;
+  Campo campo;
+  String cultivo;
+  Riego riego;
+  int posicionCampo;
   @override
-  _AltaUI createState() => _AltaUI(listaCampos: listaCampos);
+  _ModificarUI createState() => _ModificarUI(listaCampos: listaCampos, campo: campo, cultivo: cultivo, riego: riego, posicionCampo: posicionCampo);
 
-  AltaUI({this.listaCampos});
-
+  ModificarUI({@required this.listaCampos, this.campo, this.cultivo, this.riego, this.posicionCampo});
 }
 
-class _AltaUI extends State<AltaUI> {
+class _ModificarUI extends State<ModificarUI> {
   final GlobalKey<FormBuilderState> _fbKey = GlobalKey<FormBuilderState>();
+  List<Campo> listaCampos;
+  Campo campo;
+  String cultivo;
+  Riego riego;
+  int posicionCampo;
+  _ModificarUI({@required this.listaCampos, this.campo, this.cultivo, this.riego, this.posicionCampo});
   List<DropdownMenuItem<String>> listaCultivos;
   List<DropdownMenuItem<String>> listaRiego;
   List<DropdownMenuItem<String>> listaEficiencia;
@@ -33,25 +41,21 @@ class _AltaUI extends State<AltaUI> {
   final controladorCampo = TextEditingController();
   final controladorFecha = TextEditingController();
   final controladorUbicacion = TextEditingController();
-  List<Campo> listaCampos;
-
-  _AltaUI({this.listaCampos});
 
   @override
   void initState() {
     super.initState();
+    controladorCampo.value = TextEditingValue(text: campo.nombre);
+    valorCultivo = cultivo;
+    valorRiego = riego.tipo;
+    valorEficiencia = campo.eficiencia.toString();
+    controladorFecha.value = TextEditingValue(text: campo.fecha_siembra);
+    controladorUbicacion.value = TextEditingValue(text: campo.latitud.toString() + ', ' + campo.longitud.toString());
     listaCultivos = [];
     listaRiego = [];
     listaEficiencia = [];
     DatabaseHelper.iniciarBD().then((status) {
       if (status) {
-        DatabaseHelper.listaCultivos().then((listMap) {
-          listMap.map((map) {
-            return getDropdownCultivo(map);
-          }).forEach((dropdownItem) {
-            listaCultivos.add(dropdownItem);
-          });
-        });
         DatabaseHelper.listaRiegos().then((listMap) {
           listMap.map((map) {
             return getDropdownTipoRiego(map);
@@ -70,12 +74,7 @@ class _AltaUI extends State<AltaUI> {
     super.dispose();
   }
 
-  DropdownMenuItem<String> getDropdownCultivo(Cultivo map) {
-    return DropdownMenuItem<String>(
-      value: map.tipo,
-      child: Text(map.tipo),
-    );
-  }
+
 
   DropdownMenuItem<String> getDropdownTipoRiego(Riego map) {
     return DropdownMenuItem<String>(
@@ -140,12 +139,7 @@ class _AltaUI extends State<AltaUI> {
   }
 
   String textUbicacion() {
-    String ubicacion;
-    if (latlng == null) {
-      ubicacion = 'Seleccione la ubicación';
-      return null;
-    }
-    ubicacion = getLatitud().toString() + '\n' + getLongitud().toString();
+    var ubicacion = campo.latitud.toString() + '\n' + campo.longitud.toString();
     return ubicacion;
   }
 
@@ -155,7 +149,7 @@ class _AltaUI extends State<AltaUI> {
     String ubicacion = textUbicacion();
 
     _onWillPop(){
-      Navigator.pop(context, listaCampos);
+      Navigator.pop(context, campo);
     }
     return WillPopScope(
       onWillPop: _onWillPop,
@@ -179,7 +173,7 @@ class _AltaUI extends State<AltaUI> {
                   Icons.arrow_back,
                   color: Colors.grey,
                 ),
-                onPressed: () => Navigator.pop(context, listaCampos),
+                onPressed: () => Navigator.pop(context, campo),
               ),
             ),
             body: FormBuilder(
@@ -189,7 +183,7 @@ class _AltaUI extends State<AltaUI> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text('NUEVO CAMPO', style: TextStyle(fontSize: 20, color: Color(0xFF4CA6CA), fontWeight: FontWeight.bold),),
+                    Text('MODIFICAR CAMPO', style: TextStyle(fontSize: 20, color: Color(0xFF4CA6CA), fontWeight: FontWeight.bold),),
                     SizedBox(
                       height: 16.0,
                     ),
@@ -198,6 +192,7 @@ class _AltaUI extends State<AltaUI> {
                       decoration: InputDecoration(
                         labelText: 'Campo',
                         hintText: "Nombre del campo",
+                        enabled: false,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(5.0),
                           borderSide: BorderSide(
@@ -205,10 +200,6 @@ class _AltaUI extends State<AltaUI> {
                           ),
                         ),
                       ),
-                      validators: [
-                        FormBuilderValidators.required(errorText: 'Introduzca el nombre del campo'),
-                        FormBuilderValidators.maxLength(20, errorText: 'El nombre del campo no puede superar los 20 carácteres')
-                      ],
                     ),
                     SizedBox(height: 16.0),
                     Row(
@@ -217,29 +208,16 @@ class _AltaUI extends State<AltaUI> {
                         SizedBox(width: 16.0),
                         Expanded(
                           child: FormBuilderDropdown(
-                            attribute: valorCultivo,
-                            onChanged: (newValue) {
-                              setState(() {
-                                valorCultivo = newValue;
-                              });
-                            },
-                            hint: Text('Seleccionar cultivo'),
-                            items: listaCultivos,
-                            validators: [FormBuilderValidators.required(errorText: 'Seleccione el tipo de cultivo')],
+                            readOnly: true,
+                            hint: Text(valorCultivo),
                           ),
                         )
                       ],
                     ),
                     SizedBox(height: 16.0),
-                    FormBuilderDateTimePicker(
-                      inputType: InputType.date,
+                    FormBuilderTextField(
                       controller: controladorFecha,
-                      validators: [
-                        FormBuilderValidators.required(
-                            errorText: 'Introduzca una fecha'),
-                      ],
-                      format: DateFormat("yyyy-MM-dd"),
-                      initialDate: DateTime.now(),
+                      readOnly: true,
                       decoration: InputDecoration(
                         labelText: 'Fecha de siembra',
                         border: OutlineInputBorder(
@@ -249,9 +227,6 @@ class _AltaUI extends State<AltaUI> {
                           ),
                         ),
                       ),
-                      onChanged: (dt) {
-                        setState(() => _fecha = dt);
-                      },
                     ),
                     SizedBox(height: 16.0),
                     Row(
@@ -261,6 +236,7 @@ class _AltaUI extends State<AltaUI> {
                         Expanded(
                           child: FormBuilderDropdown(
                             attribute: valorRiego,
+                            initialValue: valorRiego,
                             onChanged: (newValue) {
                               setState(() {
                                 valorRiego = newValue;
@@ -290,6 +266,7 @@ class _AltaUI extends State<AltaUI> {
                                   valorEficiencia = newValue;
                                 });
                               },
+                              initialValue: campo.eficiencia.toStringAsFixed(0),
                               hint: Text('Seleccionar eficiencia'),
                               items: listaEficiencia,
                               validators: [FormBuilderValidators.required(errorText: 'Seleccione un porcentaje de eficiencia')],
@@ -303,7 +280,7 @@ class _AltaUI extends State<AltaUI> {
                         RaisedButton(
                           onPressed: () async {
                             latlng = await Navigator.of(context).push(
-                                MaterialPageRoute(builder: (context) => Mapa()));
+                                MaterialPageRoute(builder: (context) => MapaDetalle(lat: campo.latitud, lon:  campo.longitud,)));
                           },
                           child: Text('UBICACIÓN'),
                         ),
@@ -342,18 +319,15 @@ class _AltaUI extends State<AltaUI> {
                               //Se realiza el alta de un campo
                               var idRiego =
                               await DatabaseHelper.getIdRiego(valorRiego);
-                              var idCultivo =
-                              await DatabaseHelper.getIdCultivo(valorCultivo);
-                              double longitud = getLongitud();
-                              double latitud = getLatitud();
-                              Campo campo = new Campo(
+                              Campo campoModificado = new Campo(
+                                idCampo: campo.idCampo,
                                 nombre: controladorCampo.text,
-                                fecha_siembra: controladorFecha.text,
-                                longitud: longitud,
-                                latitud: latitud,
+                                fecha_siembra: campo.fecha_siembra,
+                                longitud: campo.latitud,
+                                latitud: campo.longitud,
                                 eficiencia: double.parse(valorEficiencia),
                                 idRiego: idRiego,
-                                idCultivo: idCultivo,
+                                idCultivo: campo.idCultivo,
                               );
                               print(campo.idCampo.toString() +
                                   ' ' +
@@ -366,14 +340,12 @@ class _AltaUI extends State<AltaUI> {
                                   campo.idRiego.toString() +
                                   valorRiego +
                                   ' ');
-                              print('ALTA');
-                              DatabaseHelper.insertCampo(campo);
-                              listaCampos.add(campo);
-                              Navigator.pop(context, listaCampos);
+                              DatabaseHelper.updateCampo(campoModificado, campo.idCampo);
+                              Navigator.pop(context, campoModificado);
                             }
                           },
                           child: Text(
-                            'ALTA',
+                            'MODIFICAR',
                             style: TextStyle(color: Colors.white),
                           ),
                         ),

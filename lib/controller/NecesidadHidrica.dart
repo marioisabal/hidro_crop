@@ -1,3 +1,7 @@
+/**
+ * Clase en la que se realizan los cálculos necesarios para obtener la
+ * necesidd hídrica.
+ */
 import 'package:logger/logger.dart';
 
 class NecesidadHidrica{

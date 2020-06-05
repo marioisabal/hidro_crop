@@ -1,3 +1,7 @@
+/**
+ * Clase que define el objeto Riego
+ */
+
 class Riego{
   final int idRiego;
   final String tipo;

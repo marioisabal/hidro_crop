@@ -1,3 +1,8 @@
+/**
+ * Ventana que muestra e inicializa el mapa, también recupera las
+ * coordenadas de la ubicación seleccionada.
+ */
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -30,7 +35,8 @@ class _Mapa extends State<Mapa> {
       color: Color(0xFF4CA6CA),
       size: 50.0,
     );
-    getCurrentLocation();
+      getCurrentLocation();
+
   }
 
   void getCurrentLocation() async {
@@ -146,7 +152,6 @@ class _Mapa extends State<Mapa> {
                   contentPadding: EdgeInsets.only(left: 15.0, top: 15.0),
                   suffixIcon: IconButton(
                     icon: Icon(Icons.search),
-                    onPressed: buscaryNavegar,
                     iconSize: 30.0,
                   ),
                 ),
@@ -219,7 +224,6 @@ class _MapaDetalle extends State<MapaDetalle> {
     );
     getMarkerLocation(lat, lon);
   }
-
 
   Completer<GoogleMapController> _controller = Completer();
   Widget _child;
@@ -298,8 +302,8 @@ class _MapaDetalle extends State<MapaDetalle> {
     });
 
     GoogleMapController controller = await _controller.future;
-    controller.animateCamera(
-        CameraUpdate.newLatLngZoom(LatLng(lat, lon), 17.0));
+    controller
+        .animateCamera(CameraUpdate.newLatLngZoom(LatLng(lat, lon), 17.0));
   }
 
   Future anadirMarcador(LatLng latLng) async {

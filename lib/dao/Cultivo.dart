@@ -1,3 +1,7 @@
+/**
+ * Clase que define el objeto Cultivo
+ */
+
 class Cultivo{
   final int idCultivo;
   final String tipo;

@@ -1,3 +1,7 @@
+/**
+ * Clase que define el objeto Etapa
+ */
+
 class Etapa{
   final int idEtapa;
   final String nombre;

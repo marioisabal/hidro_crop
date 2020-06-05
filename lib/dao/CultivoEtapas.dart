@@ -1,3 +1,7 @@
+/**
+ * Clase que define el objeto CultivoEtapas
+ */
+
 class CultivoEtapas{
   final int idCultivoTieneEtapas;
   final int idCultivo;

@@ -1,3 +1,7 @@
+/**
+ * Clase que define el objeto HorasDiurnasMensuales
+ */
+
 class HorasDiurnasMensuales{
   final int idHorasDiurnasMensuales;
   final double latitud;

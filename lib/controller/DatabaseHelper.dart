@@ -1,3 +1,8 @@
+/**
+ * Clase desde la que se establece la conexión a la base de datos SQLite y se
+ * declaran los diferentes SELECT, CREATE, UPDATE Y DELETE.
+ */
+
 import 'dart:async';
 
 import 'package:HidroCrop/dao/Campo.dart';
@@ -40,7 +45,6 @@ class DatabaseHelper {
     String insertCultivoEtapa =
     await rootBundle.loadString('sql/insertCultivoEtapa.sql');
     String insertRiego = await rootBundle.loadString('sql/insertRiego.sql');
-    String insertCampo = await rootBundle.loadString('sql/insertCampo.sql');
     String insertHorasDiurnasMensuales =
     await rootBundle.loadString('sql/insertHorasDiurnasMensuales.sql');
     final database = openDatabase(
@@ -56,7 +60,6 @@ class DatabaseHelper {
         db.rawInsert(insertEtapa);
         db.rawInsert(insertCultivoEtapa);
         db.rawInsert(insertRiego);
-        db.rawInsert(insertCampo);
         db.rawInsert(insertHorasDiurnasMensuales);
       },
       version: 1,
@@ -198,14 +201,14 @@ class DatabaseHelper {
     });
   }
 
-  Future<void> updateCampo(Campo campo) async {
+  static Future<void> updateCampo(Campo campo, int idCampo) async {
     logger.i('updateCampo');
     // Actualiza el Campo dado
     await db.update(
       'CAMPO',
       campo.toMap(),
       where: "idCampo = ?",
-      whereArgs: [campo.idCampo],
+      whereArgs: [idCampo],
     );
   }
 
